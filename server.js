@@ -1,30 +1,25 @@
+// Description: Main server file
 const express = require('express');
 const errorHandler = require('./middleware/errorHandler');
 const app = express();
 const dotenv = require('dotenv').config();
 const connectDB = require('./config/DbConnection');
-const session = require("express-session");
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
-port = 3000 || process.env.port;
+port = 3000 || process.env.PORT;
 
+// Connect to the database
 connectDB();
 
-//parser
+// Body parser middleware
 app.use(express.json());
-app.use('/api/passwords',require("./routes/passwordRoute"));
-app.use('/api/users',require("./routes/userRoute"));
-app.use(errorHandler);
 
-app.listen('3000',()=>{
-    console.log(`Server running on Port: ${port}`);
-})
-
-//adding session based storage
-const MongoDBStore = require("connect-mongodb-session")(session);
+// Session middleware
 const store = new MongoDBStore({
   uri: process.env.CONNECTION_STRING,
-  collection: "sessions",
-  expires: 15 * 60 * 1000, 
+  collection: 'sessions',
+  expires: 15 * 60 * 1000, // Session expiration time (15 minutes)
 });
 
 app.use(
@@ -35,3 +30,15 @@ app.use(
     store,
   })
 );
+
+// Routes
+app.use('/api/passwords', require('./routes/passwordRoute'));
+app.use('/api/users', require('./routes/userRoute'));
+
+// Error handler middleware
+app.use(errorHandler);
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running on Port: ${port}`);
+});

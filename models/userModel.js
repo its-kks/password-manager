@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
-    _id:{
-        type:String,
-        lower:true,
-        require:true,
-    },
     email:{
         type:String,
         require: [true,"Email is compulsory!"],
@@ -21,4 +16,4 @@ const userSchema = mongoose.Schema({
     }
 );
 
-module.exports = mongoose.model("User",userSchema);
+module.exports = mongoose.model("Password_User",userSchema);

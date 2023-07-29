@@ -34,20 +34,33 @@ const getPasswords = asyncHandler(async (req, res) => {
 //@desc create contact
 //@route POST /api/contacts/id
 //@access private
-const createPassword = asyncHandler(async (req,res)=>{
-    const {username,website,password}=req.body;
-    if(!(username || password)){
-        res.status(400);
-        throw new Error("username and password are mandatory fields");
+const createPassword = asyncHandler(async (req, res) => {
+    const { username, website, password } = req.body;
+    if (!username || !password) {
+      res.status(400);
+      throw new Error('Username and password are mandatory fields');
     }
-    const contact = await Password.create({
+  
+    const masterPassword = req.session.masterPassword;
+    if (!masterPassword) {
+      res.status(401);
+      throw new Error('Master password not found in the session.');
+    }
+  
+    try {
+      const encryptedPassword = CryptoJS.AES.encrypt(password, masterPassword).toString();
+      const contact = await Password.create({
         username,
         website,
-        password,
-        user_id:req.user.id
-    });
-    res.status(201).json(contact);
-
+        password: encryptedPassword,
+        user_id: req.user.id,
+      });
+      res.status(201).json(contact);
+    } catch (error) {
+      console.log(error);
+      res.status(500);
+      throw new Error('Error in creating password');
+    }
 });
 
 //@desc get single contact

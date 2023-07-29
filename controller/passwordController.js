@@ -2,8 +2,8 @@ const Password=require('../models/passwordModel')
 const asyncHandler = require('express-async-handler');
 const CryptoJS = require('crypto-js');
 
-//@desc Get all contacts
-//@route GET /api/contacts
+//@desc Get all passwords
+//@route GET /api/passwords
 //@access private
 const getPasswords = asyncHandler(async (req, res) => {
     // Retrieve the master password from the session
@@ -31,8 +31,8 @@ const getPasswords = asyncHandler(async (req, res) => {
     res.status(200).json(decryptedPasswords);
 });
 
-//@desc create contact
-//@route POST /api/contacts/id
+//@desc create password
+//@route POST /api/passwords/id
 //@access private
 const createPassword = asyncHandler(async (req, res) => {
     const { username, website, password } = req.body;

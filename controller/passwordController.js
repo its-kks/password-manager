@@ -49,14 +49,15 @@ const createPassword = asyncHandler(async (req, res) => {
   
     try {
       const encryptedPassword = CryptoJS.AES.encrypt(password, masterPassword).toString();
-      const password = await Password.create({
+      const userPassword = await Password.create({
         username,
         website,
         password: encryptedPassword,
         user_id: req.user.id,
       });
-      res.status(201).json(password);
+      res.status(201).json(userPassword);
     } catch (error) {
+        console.log(error);
       res.status(500);
       throw new Error('Error in creating password');
     }

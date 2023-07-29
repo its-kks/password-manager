@@ -49,75 +49,72 @@ const createPassword = asyncHandler(async (req, res) => {
   
     try {
       const encryptedPassword = CryptoJS.AES.encrypt(password, masterPassword).toString();
-      const contact = await Password.create({
+      const password = await Password.create({
         username,
         website,
         password: encryptedPassword,
         user_id: req.user.id,
       });
-      res.status(201).json(contact);
+      res.status(201).json(password);
     } catch (error) {
-      console.log(error);
       res.status(500);
       throw new Error('Error in creating password');
     }
 });
 
-//@desc get single contact
-//@route GET /api/contacts/id
+//@desc get single password
+//@route GET /api/passwords/id
 //@access private
 const getPassword = asyncHandler(async (req,res)=>{
-    const contact = await Contact.findById(req.params.id);
-    console.log(contact);
-    if(!contact){
-        console.log("Not Found")
+    const password = await Password.findById(req.params.id);
+    if(!password){
         res.status(404);
-        throw new Error("Contact not found");
+        throw new Error("Password not found");
     }
-    res.status(200).json(contact);
+    res.status(200).json(password);
 })
 
-//@desc update single contact
-//@route PUT /api/contacts/id
+//@desc update single password
+//@route PUT /api/passwords/id
 //@access private
 const updatePassword = asyncHandler(async (req,res)=>{
-    //check if contact present
-    const contact = await Contact.findById(req.params.id);
-    if(!contact){
+    //check if password present
+    const password = await Password.findById(req.params.id);
+    if(!password){
         res.status(404);
-        throw new Error("Contact not found");
+        throw new Error("Password not found");
     }
 
-    if(contact.user_id.toString() !== req.user.id){
+    if(password.user_id.toString() !== req.user.id){
         res.status(403);
-        throw new Error("User can't update contacts of other users");
+        throw new Error("Passwoed not found");
     }
 
-    const updateContact = await Contact.findByIdAndUpdate(
+    const updatePassword = await Password.findByIdAndUpdate(
         req.params.id,
         req.body,
         {new:true}
     );
-    res.status(200).json(updateContact);
+    res.status(200).json(updatePassword);
 })
 
-//@desc delete single contact
-//@route DELETE /api/contacts/id
+//@desc delete single password
+//@route DELETE /api/passwords/id
 //@access private
 const deletePassword = asyncHandler(async (req,res)=>{
-    const contact = await Contact.findById(req.params.id);
-    if(!contact){
+    const password = await Password.findById(req.params.id);
+    if(!password){
         res.status(404);
-        throw new Error("Contact not found");
+        throw new Error("Password not found");
     }
 
-    if(contact.user_id.toString() !== req.user.id){
+    if(password.user_id.toString() !== req.user.id){
         res.status(403);
-        throw new Error("User can't delete contacts of other users");
+        throw new Error("No password found");
     }
 
-    await Contact.deleteOne({_id:req.params.id});
-    res.status(200).json(contact);
+    await Password.deleteOne({_id:req.params.id});
+    res.status(200).json(password);
 })
 
 module.exports={getPasswords,createPassword,getPassword,updatePassword,deletePassword};

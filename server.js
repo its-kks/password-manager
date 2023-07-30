@@ -13,6 +13,7 @@ port = 3000 || process.env.PORT;
 connectDB();
 
 // Body parser middleware
+app.use(express.urlencoded({ extended: true }));//check this 
 app.use(express.json());
 
 // Session middleware

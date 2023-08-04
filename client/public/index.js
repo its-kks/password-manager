@@ -49,7 +49,3 @@ async function handleLogin() {
         // Handle the error appropriately (e.g., display an error message to the user)
     }
 }
-
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}

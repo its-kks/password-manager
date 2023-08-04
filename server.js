@@ -36,6 +36,10 @@ app.use(
 app.use('/api/passwords', require('./routes/passwordRoute'));
 app.use('/api/users', require('./routes/userRoute'));
 
+// Handling Client Side Routing
+app.use(express.static('./client/public'));
+app.use('/',require('./routes/index'));
+
 // Error handler middleware
 app.use(errorHandler);
 

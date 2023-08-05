@@ -22,6 +22,7 @@ const getPasswords = asyncHandler(async (req, res) => {
       const bytes = CryptoJS.AES.decrypt(password.password, masterPassword);
       const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
       return {
+        id:password._id,
         username: password.username,
         website: password.website,
         password: originalPassword,
@@ -35,6 +36,7 @@ const getPasswords = asyncHandler(async (req, res) => {
 //@route POST /api/passwords/id
 //@access private
 const createPassword = asyncHandler(async (req, res) => {
+    console.log('HI');
     const { username, website, password } = req.body;
     if (!username || !password) {
       res.status(400);
@@ -75,30 +77,6 @@ const getPassword = asyncHandler(async (req,res)=>{
     res.status(200).json(password);
 })
 
-//@desc update single password
-//@route PUT /api/passwords/id
-//@access private
-const updatePassword = asyncHandler(async (req,res)=>{
-    //check if password present
-    const password = await Password.findById(req.params.id);
-    if(!password){
-        res.status(404);
-        throw new Error("Password not found");
-    }
-
-    if(password.user_id.toString() !== req.user.id){
-        res.status(403);
-        throw new Error("Passwoed not found");
-    }
-
-    const updatePassword = await Password.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {new:true}
-    );
-    res.status(200).json(updatePassword);
-})
-
 //@desc delete single password
 //@route DELETE /api/passwords/id
 //@access private
@@ -117,6 +95,56 @@ const deletePassword = asyncHandler(async (req,res)=>{
     await Password.deleteOne({_id:req.params.id});
     res.status(200).json(password);
 })
+
+//@desc update single password
+//@route PUT /api/passwords/id
+//@access private
+const updatePassword = asyncHandler(async (req, res) => {
+  // Check if password is present
+  const password = await Password.findById(req.params.id);
+  if (!password) {
+    res.status(404);
+    throw new Error("Password not found");
+  }
+
+  // Check if the password belongs to the current user
+  if (password.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("Password not found");
+  }
+
+  const { username, website, password: newPassword } = req.body;
+
+  const masterPassword = req.session.masterPassword;
+  let encryptedPassword;
+  if (newPassword) {
+    if (!masterPassword) {
+      res.status(401);
+      throw new Error("Master password not found in the session.");
+    }
+    encryptedPassword = CryptoJS.AES.encrypt(newPassword, masterPassword).toString();
+  }
+
+  const updatedPassword = {
+    username,
+    website,
+    ...(encryptedPassword && { password: encryptedPassword }),
+  };
+
+  try {
+    const updatedPasswordRecord = await Password.findByIdAndUpdate(
+      req.params.id,
+      updatedPassword,
+      { new: true }
+    );
+
+    res.status(200).json(updatedPasswordRecord);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+    throw new Error("Error in updating password");
+  }
+});
 
 module.exports={getPasswords,createPassword,getPassword,updatePassword,deletePassword};
 

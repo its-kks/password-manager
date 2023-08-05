@@ -40,6 +40,11 @@ app.use('/api/users', require('./routes/userRoute'));
 app.use(express.static('./client/public'));
 app.use('/',require('./routes/index'));
 
+
+// app.get('/home/user/:id', (req, res) => {
+//   res.sendFile(path.join('./client/public', 'index.html'));
+// });
+
 // Error handler middleware
 app.use(errorHandler);
 

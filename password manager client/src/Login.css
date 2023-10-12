@@ -1,0 +1,50 @@
+.input {
+  background: #3B3B3B;
+  border: 2px solid grey;
+  padding: 15px;
+  border-radius: 5px;
+  outline: none;
+  color: white;
+  margin: 5px;
+}
+
+.input:focus {
+  background: white;
+  color: black;
+}
+.flexbox{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body{
+  margin: 0px;
+  overflow: hidden;
+  background: rgb(20, 20, 20);
+}
+.button {
+  border: 2px solid grey;
+  padding: 15px;
+  border-radius: 5px;
+  outline: none;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.loginButton {
+  background: #029c59;
+  color: white;
+}
+
+.loginButton:active {
+  background: #017141;
+}
+
+.signupButton {
+  background: #3B3B3B;
+  color: white;
+}
+
+.signupButton:active {
+  background: #252525;
+}

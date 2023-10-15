@@ -15,7 +15,7 @@ otpObject = {
         console.log(this.users);
         console.log(this.users[email]);
         console.log(otp);
-        if(this.users[email] === otp){
+        if(this.users[email].otp === otp){
             return true;
         }
         return false;

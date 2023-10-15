@@ -25,26 +25,41 @@ export function Signup() {
             }
             else{
                 //handle otp
-
-                //
-                const response = await fetch(server+"api/users/register", {
+                const response = await fetch(server+"api/users/otp", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        email,
-                        password
+                        email
                     })
                 });
                 if(response.ok){
-                   navigate("/login");
+                    setShowOtp(true);
                 }
                 else{
                     const errorData = await response.json();
                     alert(errorData.message);
                 }
-                setShowOtp(true);
+                //
+                // const response = await fetch(server+"api/users/register", {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify({
+                //         email,
+                //         password
+                //     })
+                // });
+                // if(response.ok){
+                //    navigate("/login");
+                // }
+                // else{
+                //     const errorData = await response.json();
+                //     alert(errorData.message);
+                // }
+                // setShowOtp(true);
             }
             
         }
@@ -59,6 +74,9 @@ export function Signup() {
         navigate('/login')
     }
 
+    function handleVerify(){
+        // if()
+    }
   return (
     <>
       <div className='flexbox'>
@@ -85,6 +103,7 @@ export function Signup() {
               
             {/* Input */}
             <div className='flexbox' style={{ flexDirection: 'column', marginTop: '40px' }}>
+              {!showOtp ? <>
               <Input
                 name={'email'}
                 id={'email'}
@@ -109,6 +128,8 @@ export function Signup() {
                 upDate={setConfirmPass}
                 type={'password'}
               />
+              </> : null }
+
               {showOtp ? (
                 <Input
                   name={'otp'}
@@ -124,7 +145,7 @@ export function Signup() {
             {/* Button */}
             <div className='flexbox' style={{ margin: '10px 0px 40px 0px' }}>
                 {showOtp ? (
-                    <Button name={'Verify'} className={'loginButton button'}/>
+                    <Button name={'Verify'} className={'loginButton button'} onClick={handleVerify}/>
                 ) : (
                     <>                    
                         <Button name={'SignUp'} className={'loginButton button'} onClick={handleSignup}/>

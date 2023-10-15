@@ -4,6 +4,10 @@ otpObject = {
     },
     generateOTP : function(email){
         let otp = Math.floor(Math.random()*1000000);
+        otp = otp.toString();
+        while(otp.length<6){
+            otp = otp + "0";
+        }
         this.users[email] = {otp,timestamp:Date.now()};
         return otp;
     },

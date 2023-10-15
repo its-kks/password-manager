@@ -111,7 +111,7 @@ async function sendMail (email,otp){
     Messages: [
       {
         From: {
-          Email: '4eycxbfx@anonaddy.me',
+          Email: process.env.OTP_EMAIL,
           Name: 'test',
         },
         To: [
@@ -120,9 +120,9 @@ async function sendMail (email,otp){
             Name: 'User',
           },
         ],
-        Subject: 'OTP for password manager',
-        TextPart: 'Hello, this is your otp: '+otp+'',
-        HTMLPart: 'Hello, this is the HTML part of the email.',
+        Subject: 'OTP for easy password manager',
+        TextPart: '',
+        HTMLPart: `Your OTP is <B>${otp}</B> valid for 10 minutes`,
       },
     ],
   };

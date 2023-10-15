@@ -115,11 +115,11 @@ async function sendOTPEmail(email, otp) {
   const request = mailjet.post('send').request({
     FromEmail: process.env.OTP_EMAIL,
     FromName: 'Easy Password Manager',
-    Subject: 'Your email flight plan!',
+    Subject: 'OTP for Easy Password Manager',
     'Text-part':
-      'Dear passenger, welcome to Mailjet! May the delivery force be with you!'+otp,
+      '',
     'Html-part':
-      '<h3>Dear passenger, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!<br />May the delivery force be with you!',
+      '<h3>OTP for Easy Password Manager</h3><br/><p>Your OTP is: ' +otp+ '(valid for 10 minutes)</p>',
     Recipients: [{ Email: email }],
   })
   request

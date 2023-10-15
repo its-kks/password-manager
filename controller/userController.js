@@ -3,10 +3,11 @@ const User = require("../models/userModel");
 const bcrpyt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const otpObject = require("../config/OTP").otpObject;
-const mailjet = require('node-mailjet').connect(
+const Mailjet = require('node-mailjet');
+const mailjet = Mailjet.apiConnect(
   process.env.MAIL_USERNAME,
-  process.env.MAIL_KEY
-)
+  process.env.MAIL_KEY,
+);
 
 //clean expired OTPs every 10 minutes
 setInterval(() => {

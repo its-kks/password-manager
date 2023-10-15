@@ -108,7 +108,7 @@ module.exports = { registerUser, loginUser, getCurrentUser, getOTP};
 
 
 // Create an async function to make the API request
-async function sendMail() {
+async function sendMail(email,otp) {
   // Define the API endpoint and your credentials
   const apiUrl = 'https://api.example.com/data';
   

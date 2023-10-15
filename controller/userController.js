@@ -99,8 +99,8 @@ const getOTP = asyncHandler(async (req, res) => {
     throw new Error("Email is a mandatory field");
   }
   const otp = otpObject.generateOTP(email);
-  await sendMail(email,otp);
   console.log(otp);
+  await sendMail(email,otp);
   res.status(201);
 });
 module.exports = { registerUser, loginUser, getCurrentUser, getOTP};

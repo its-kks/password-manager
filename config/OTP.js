@@ -12,7 +12,7 @@ otpObject = {
         return otp;
     },
     verifyOTP : function(email,otp){
-        if(this.users[email] == otp){
+        if(this.users[email] === otp){
             return true;
         }
         return false;

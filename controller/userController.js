@@ -13,10 +13,14 @@ setInterval(() => {
 //@route POST /api/users/register
 //@access public
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
+  const { email, password ,otp} = req.body;
+  if (!email || !password || !otp) {
     res.status(400);
-    throw new Error("Email and password are mandatory fields");
+    throw new Error("Email ,password and OTP are mandatory fields");
+  }
+  if(!otpObject.verifyOTP(email,otp)){
+    res.status(401);
+    throw new Error("Invalid OTP");
   }
   const userAvailable = await User.findOne({ email });
   if (userAvailable) {
@@ -95,7 +99,54 @@ const getOTP = asyncHandler(async (req, res) => {
     throw new Error("Email is a mandatory field");
   }
   const otp = otpObject.generateOTP(email);
+  await sendMail(email,otp);
   console.log(otp);
-  res.status(201).json({ otp });
+  res.status(201);
 });
 module.exports = { registerUser, loginUser, getCurrentUser, getOTP};
+
+
+async function sendMail (email,otp){
+  const emailData = {
+    Messages: [
+      {
+        From: {
+          Email: 'test@email.com',
+          Name: 'test',
+        },
+        To: [
+          {
+            Email: email,
+            Name: 'User',
+          },
+        ],
+        Subject: 'OTP for password manager',
+        TextPart: 'Hello, this is your otp: '+otp+'',
+        HTMLPart: 'Hello, this is the HTML part of the email.',
+      },
+    ],
+  };
+
+  const apiUrl = 'https://api.mailjet.com/v3.1/send';
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(emailData),
+    // Include your Mailjet API credentials for basic authentication
+    headers: {
+      'Authorization': `Basic ${btoa(`${process.env.MAIL_USERNAME}:${process.env.MAIL_KEY}`)}`,
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log('Email sent successfully');
+    console.log(data);
+  } else {
+    console.error('Error sending email:', response.status, response.statusText);
+  }
+};
+

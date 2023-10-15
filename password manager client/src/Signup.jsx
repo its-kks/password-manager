@@ -4,6 +4,8 @@ import { Button } from './Button';
 import { Link, useNavigate } from 'react-router-dom';
 import * as EmailValidator from 'email-validator';
 import './Login.css';
+import { set } from 'mongoose';
+// import { handleLogin,handleBack,handleSignup,handleVerify } from './JS/Signup';
 
 export function Signup() {
     const [email, setMail] = useState('');
@@ -15,7 +17,6 @@ export function Signup() {
     const mailApi = import.meta.env.VITE_API_KEY;
     const server = import.meta.env.VITE_SERVER;
 
-    //handling signup
     async function handleSignup() {
         if(password===confirmPassword && password!=='' 
             && confirmPassword!=='' 
@@ -41,42 +42,70 @@ export function Signup() {
                     const errorData = await response.json();
                     alert(errorData.message);
                 }
-                //
-                // const response = await fetch(server+"api/users/register", {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     },
-                //     body: JSON.stringify({
-                //         email,
-                //         password
-                //     })
-                // });
-                // if(response.ok){
-                //    navigate("/login");
-                // }
-                // else{
-                //     const errorData = await response.json();
-                //     alert(errorData.message);
-                // }
-                // setShowOtp(true);
             }
             
         }
         else if(password==='' || confirmPassword==='' || email===''){
             alert("All Fields are mandatory");
+            console.log(email,password,confirmPassword);
         }
         else if(password!==confirmPassword){
             alert("Passwords do not match");
         }
     }
-    function handleBack(){
+    function handleLogin(){
         navigate('/login')
     }
 
-    function handleVerify(){
-        // if()
+    async function handleVerify(){
+        if(otp!==''){
+            const response = await fetch(server+"api/users/register", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                    otp
+                })
+            });
+            if(response.ok){
+               navigate("/login");
+            }
+            else{
+                const errorData = await response.json();
+                alert(errorData.message);
+            }
+        }
+        else{
+            alert("Enter OTP");
+        }
     }
+
+    function handleBack(){
+        setShowOtp(false);
+        setMail('');
+        setPass('');
+        setConfirmPass('');
+        setOtp('');
+    }
+
+    // function handleLogin() {
+    //     handleLogin(navigate);
+    //   }
+    
+    //   async function handleSignup() {
+    //     await handleSignup(email, password, confirmPassword, setShowOtp, server);
+    //   }
+    
+    //   async function handleVerify() {
+    //     await handleVerify(otp, email, password, navigate, server);
+    //   }
+    
+    //   function handleBack() {
+    //     handleBack(setShowOtp,setPass,setMail,setShowOtp,setConfirmPass);
+    //   }
   return (
     <>
       <div className='flexbox'>
@@ -145,11 +174,14 @@ export function Signup() {
             {/* Button */}
             <div className='flexbox' style={{ margin: '10px 0px 40px 0px' }}>
                 {showOtp ? (
+                    <>
                     <Button name={'Verify'} className={'loginButton button'} onClick={handleVerify}/>
+                    <Button name={'Back'} className={'signupButton button'} onClick={handleBack}/>
+                    </>
                 ) : (
                     <>                    
                         <Button name={'SignUp'} className={'loginButton button'} onClick={handleSignup}/>
-                        <Button name={'Back'} className={'signupButton button'} onClick={handleBack}/>
+                        <Button name={'Login'} className={'signupButton button'} onClick={handleLogin}/>
                     </>
                 )}
               

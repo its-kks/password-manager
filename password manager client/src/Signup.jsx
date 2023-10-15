@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Input } from './Input';
 import { Button } from './Button';
 import { Link, useNavigate } from 'react-router-dom';
+import * as EmailValidator from 'email-validator';
 import './Login.css';
 
 export function Signup() {
@@ -11,12 +12,41 @@ export function Signup() {
     const [otp, setOtp] = useState('');
     const [showOtp, setShowOtp] = useState(false);
     const navigate = useNavigate();
+    const mailApi = import.meta.env.VITE_API_KEY;
+    const server = import.meta.env.VITE_SERVER;
 
-    function handleSignup() {
+    //handling signup
+    async function handleSignup() {
         if(password===confirmPassword && password!=='' 
             && confirmPassword!=='' 
             && email!==''){
-            setShowOtp(true);
+            if(!EmailValidator.validate(email)){
+                alert("Incorrect email")
+            }
+            else{
+                //handle otp
+
+                //
+                const response = await fetch(server+"api/users/register", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+                });
+                if(response.ok){
+                   navigate("/login");
+                }
+                else{
+                    const errorData = await response.json();
+                    alert(errorData.message);
+                }
+                setShowOtp(true);
+            }
+            
         }
         else if(password==='' || confirmPassword==='' || email===''){
             alert("All Fields are mandatory");

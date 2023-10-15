@@ -2,6 +2,13 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const bcrpyt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const otpObject = require("../config/OTP").otpObject;
+
+//clean expired OTPs every 10 minutes
+setInterval(() => {
+  otpObject.cleanExpiredValues();
+});
+
 //@desc Register a user
 //@route POST /api/users/register
 //@access public
@@ -34,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
   res.json({ message: "Registered the user" });
 });
 
-//@desc Register a user
+//@desc Login a user
 //@route POST /api/users/login
 //@access public
 const loginUser = asyncHandler(async (req, res) => {
@@ -78,4 +85,17 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   res.json(req.user);
 });
 
-module.exports = { registerUser, loginUser, getCurrentUser };
+//@desc Return OTP
+//@route POST /api/users/otp
+//@access public
+const getOTP = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    res.status(400);
+    throw new Error("Email is a mandatory field");
+  }
+  const otp = otpObject.generateOTP(email);
+  console.log(otp);
+  res.status(201).json({ otp });
+});
+module.exports = { registerUser, loginUser, getCurrentUser, getOTP};

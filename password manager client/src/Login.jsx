@@ -4,11 +4,28 @@ import {Button} from './Button'
 import { Link, useNavigate } from 'react-router-dom';
 import * as EmailValidator from 'email-validator';
 import './Login.css'
+
 export function Login(){
     const [email,setMail] = useState("");
     const [password,setPass] = useState("");
     const navigate = useNavigate();
-    const server = "https://localhost:3000/"
+    const server = import.meta.env.VITE_SERVER;
+
+    let accessToken;
+
+    //handling cookies
+    function setCookie(name, value, minutesToExpire) {
+        let cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
+        
+        if (minutesToExpire) {
+          const expirationDate = new Date();
+          expirationDate.setTime(expirationDate.getTime() + (minutesToExpire * 60 * 1000));
+          cookieString += `; expires=${expirationDate.toUTCString()}`;
+        }
+        document.cookie = cookieString;
+    }
+
+    //handling login
     async function handleLogin(){
         if(email!=='' && password!==''){
             if(!EmailValidator.validate(email)){
@@ -22,7 +39,7 @@ export function Login(){
             let responseData;
             try {
                 // Send the POST request using fetch
-                const response = await fetch("localhost:3000/api/users/login", {
+                const response = await fetch(server+"api/users/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -33,14 +50,13 @@ export function Login(){
                 // Parse the response data as JSON
                 responseData = await response.json();
                 
-                
+                console.log(response.ok);
                 
                 if (!response.ok) {
                     throw new Error("Error: " + response.status);
                 }
                 else{
                     accessToken = responseData.accessToken;
-                    console.log(accessToken);
                     const username = email.split('@')[0];
                     setCookie('accessToken',accessToken,15);
                     setCookie('userName',username,60);

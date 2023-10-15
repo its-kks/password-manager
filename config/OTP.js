@@ -4,21 +4,20 @@ otpObject = {
     },
     generateOTP : function(email){
         let otp = Math.floor(Math.random()*1000000);
-        // otp = otp.toString();
-        // while(otp.length<6){
-        //     otp = "O" + otp;
-        // }
+        otp = otp.toString();
+        while(otp.length<6){
+            otp = "O" + otp;
+        }
         this.users[email] = {otp,timestamp:Date.now()};
         return otp;
     },
     verifyOTP : function(email,otp){
-        console.log(this.users);
-        console.log(this.users[email]);
-        console.log(otp);
-        if(this.users[email].otp === otp){
+        if(this.users[email].otp == otp){
             return true;
         }
-        return false;
+        else{
+            return false;
+        }
     },
     cleanExpiredValues : function(){
         for(let email in this.users){

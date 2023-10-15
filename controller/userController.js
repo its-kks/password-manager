@@ -106,8 +106,14 @@ const getOTP = asyncHandler(async (req, res) => {
 module.exports = { registerUser, loginUser, getCurrentUser, getOTP};
 
 
-async function sendMail (email,otp){
-  const emailData = {
+
+// Create an async function to make the API request
+async function sendMail() {
+  // Define the API endpoint and your credentials
+  const apiUrl = 'https://api.example.com/data';
+  
+  // Define the request body (as a JSON object)
+  const requestBody = {
     Messages: [
       {
         From: {
@@ -122,31 +128,32 @@ async function sendMail (email,otp){
         ],
         Subject: 'OTP for easy password manager',
         TextPart: '',
-        HTMLPart: `Your OTP is <B>${otp}</B> valid for 10 minutes`,
+        HTMLPart: `Your OTP is <B>${otp}</B>. Valid for 10 minutes.`,
       },
     ],
   };
-
-  const apiUrl = 'https://api.mailjet.com/v3.1/send';
-
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(emailData),
-    // Include your Mailjet API credentials for basic authentication
-    headers: {
-      'Authorization': `Basic ${btoa(`${process.env.MAIL_USERNAME}:${process.env.MAIL_KEY}`)}`,
-    },
+  // Create a Basic Authentication header
+  const headers = new Headers({
+    'Authorization': 'Basic ' + btoa(process.env.MAIL_USERNAME + ':' + process.env.MAIL_KEY),
+    'Content-Type': 'application/json', // Specify JSON content type
   });
 
-  if (response.ok) {
-    const data = await response.json();
-    console.log('Email sent successfully');
-    console.log(data);
-  } else {
-    console.error('Error sending email:', response.status, response.statusText);
-  }
-};
+  try {
+    // Make the fetch request with a request body
+    const response = await fetch(apiUrl, {
+      method: 'POST', // Use POST method for sending data
+      headers: headers,
+      body: JSON.stringify(requestBody), // Convert the JSON object to a string
+    });
 
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Request successful');
+      console.log(data);
+    } else {
+      throw new Error('Request failed with status: ' + response.status);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}

@@ -12,7 +12,7 @@ const mailjet = Mailjet.apiConnect(
 //clean expired OTPs every 10 minutes
 setInterval(() => {
   otpObject.cleanExpiredValues();
-});
+}, 10*60*1000);
 
 //@desc Register a user
 //@route POST /api/users/register

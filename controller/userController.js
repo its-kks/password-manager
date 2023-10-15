@@ -106,11 +106,10 @@ const getOTP = asyncHandler(async (req, res) => {
 module.exports = { registerUser, loginUser, getCurrentUser, getOTP};
 
 
-
 // Create an async function to make the API request
-async function sendMail(email,otp) {
+async function sendMail(email, otp) {
   // Define the API endpoint and your credentials
-  const apiUrl = 'https://api.example.com/data';
+  const apiUrl = 'https://api.mailjet.com/v3.1/send';
   
   // Define the request body (as a JSON object)
   const requestBody = {
@@ -151,7 +150,7 @@ async function sendMail(email,otp) {
       console.log('Request successful');
       console.log(data);
     } else {
-      throw new Error('Request failed with status: ' + response.status);
+      throw Error('Request failed with status: ' + response.status);
     }
   } catch (error) {
     console.error('Error:', error);

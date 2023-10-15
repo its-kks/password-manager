@@ -111,7 +111,7 @@ async function sendMail (email,otp){
     Messages: [
       {
         From: {
-          Email: 'test@email.com',
+          Email: '4eycxbfx@anonaddy.me',
           Name: 'test',
         },
         To: [

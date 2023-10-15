@@ -104,11 +104,15 @@ const getOTP = asyncHandler(async (req, res) => {
     throw new Error("Email is a mandatory field");
   }
   const otp = otpObject.generateOTP(email);
-  try{ sendOTPEmail(email, otp);}catch(err){
+  console.log(otp);
+  try{
+    await sendOTPEmail(email, otp);
+    res.status(200).json({message:"OTP sent to your email"});
+  }
+  catch(err){
     res.status(500);
     throw new Error("Error in sending OTP email");
   }
-  console.log(otp);
 });
 
 async function sendOTPEmail(email, otp) {

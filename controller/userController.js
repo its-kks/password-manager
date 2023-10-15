@@ -115,7 +115,7 @@ async function sendmail(){
   let headersList = {
    "Accept": "*/*",
    "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-   "Authorization": `Basic ${btoa(process.env.MAIL_USERNAM+":"+process.env.MAIL_KEY)}`,
+   "Authorization": `Basic ${process.env.MAIL_KEY}}`,
    "Content-Type": "application/json"
   }
   

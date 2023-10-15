@@ -100,59 +100,54 @@ const getOTP = asyncHandler(async (req, res) => {
   }
   const otp = otpObject.generateOTP(email);
   console.log(otp);
-  await sendMail(email,otp);
-  res.status(201);
+
+  try {
+    await sendmail(); // Pass email and otp as arguments
+    res.status(201).json({ message: "OTP sent successfully" });
+  } catch (error) {
+    res.status(400).json({ error: "Error sending OTP email" });
+  }
 });
 module.exports = { registerUser, loginUser, getCurrentUser, getOTP};
 
 
-// Create an async function to make the API request
-async function sendMail(email, otp) {
-  // Define the API endpoint and your credentials
-  const apiUrl = 'https://api.mailjet.com/v3.1/send';
-  
-  // Define the request body (as a JSON object)
-  const requestBody = {
-    Messages: [
-      {
-        From: {
-          Email: process.env.OTP_EMAIL,
-          Name: 'test',
-        },
-        To: [
-          {
-            Email: email,
-            Name: 'User',
-          },
-        ],
-        Subject: 'OTP for easy password manager',
-        TextPart: '',
-        HTMLPart: `Your OTP is <B>${otp}</B>. Valid for 10 minutes.`,
-      },
-    ],
-  };
-  // Create a Basic Authentication header
-  const headers = new Headers({
-    'Authorization': 'Basic ' + btoa(process.env.MAIL_USERNAME + ':' + process.env.MAIL_KEY),
-    'Content-Type': 'application/json', // Specify JSON content type
-  });
-
-  try {
-    // Make the fetch request with a request body
-    const response = await fetch(apiUrl, {
-      method: 'POST', // Use POST method for sending data
-      headers: headers,
-      body: JSON.stringify(requestBody), // Convert the JSON object to a string
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Request successful');
-      console.log(data);
-    } else {
-      throw Error('Request failed with status: ' + response.status);
-    }
-  } catch (error) {
-    console.error('Error:', error);
+async function sendmail(){
+  let headersList = {
+   "Accept": "*/*",
+   "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+   "Authorization": `Basic ${btoa(process.env.MAIL_USERNAM+":"+process.env.MAIL_KEY)}`,
+   "Content-Type": "application/json"
   }
+  
+  let bodyContent = JSON.stringify({
+      "Messages": [
+          {
+              "From": {
+                  "Email": "mernprojectkks@gmail.com",
+                  "Name": "test"
+              },
+              "To": [
+                  {
+                      "Email": "kkskishlesh3002@gmail.com",
+                      "Name": "User"
+                  }
+              ],
+              "Subject": "OTP for password manager",
+              "TextPart": "Hello, this is your otp:",
+              "HTMLPart": "Hello, this is the HTML part of the email."
+          }
+      ]
+  }
+  );
+  
+  let response = await fetch("https://api.mailjet.com/v3.1/send", { 
+    method: "POST",
+    body: bodyContent,
+    headers: headersList
+  });
+  
+  let data = await response.text();
+  console.log(data);
+  
 }
+ 

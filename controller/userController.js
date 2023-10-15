@@ -3,6 +3,10 @@ const User = require("../models/userModel");
 const bcrpyt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const otpObject = require("../config/OTP").otpObject;
+const mailjet = require('node-mailjet').connect(
+  process.env.MAIL_USERNAME,
+  process.env.MAIL_KEY
+)
 
 //clean expired OTPs every 10 minutes
 setInterval(() => {
@@ -99,55 +103,32 @@ const getOTP = asyncHandler(async (req, res) => {
     throw new Error("Email is a mandatory field");
   }
   const otp = otpObject.generateOTP(email);
+  try{ sendOTPEmail(email, otp);}catch(err){
+    res.status(500);
+    throw new Error("Error in sending OTP email");
+  }
   console.log(otp);
-
-  try {
-    await sendmail(); // Pass email and otp as arguments
-    res.status(201).json({ message: "OTP sent successfully" });
-  } catch (error) {
-    res.status(400).json({ error: "Error sending OTP email" });
-  }
 });
-module.exports = { registerUser, loginUser, getCurrentUser, getOTP};
 
-
-async function sendmail(){
-  let headersList = {
-   "Accept": "*/*",
-   "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-   "Authorization": `Basic ${process.env.MAIL_KEY}}`,
-   "Content-Type": "application/json"
-  }
-  
-  let bodyContent = JSON.stringify({
-      "Messages": [
-          {
-              "From": {
-                  "Email": "mernprojectkks@gmail.com",
-                  "Name": "test"
-              },
-              "To": [
-                  {
-                      "Email": "kkskishlesh3002@gmail.com",
-                      "Name": "User"
-                  }
-              ],
-              "Subject": "OTP for password manager",
-              "TextPart": "Hello, this is your otp:",
-              "HTMLPart": "Hello, this is the HTML part of the email."
-          }
-      ]
-  }
-  );
-  
-  let response = await fetch("https://api.mailjet.com/v3.1/send", { 
-    method: "POST",
-    body: bodyContent,
-    headers: headersList
-  });
-  
-  let data = await response.text();
-  console.log(data);
-  
+async function sendOTPEmail(email, otp) {
+  const request = mailjet.post('send').request({
+    FromEmail: process.env.OTP_EMAIL,
+    FromName: 'Easy Password Manager',
+    Subject: 'Your email flight plan!',
+    'Text-part':
+      'Dear passenger, welcome to Mailjet! May the delivery force be with you!'+otp,
+    'Html-part':
+      '<h3>Dear passenger, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!<br />May the delivery force be with you!',
+    Recipients: [{ Email: email }],
+  })
+  request
+    .then(result => {
+      console.log(result.body)
+    })
+    .catch(err => {
+      console.log(err.statusCode)
+      throw new Error("Error in sending OTP email");
+    })
 }
- 
+
+module.exports = { registerUser, loginUser, getCurrentUser, getOTP };

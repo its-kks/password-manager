@@ -6,6 +6,10 @@ const dotenv = require('dotenv').config();
 const connectDB = require('./config/DbConnection');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const cors  = require('cors');
+
+//handling cors
+app.use(cors())
 
 port = 3000 || process.env.PORT;
 

@@ -1,13 +1,30 @@
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Route,
+  Link,
+} from "react-router-dom";
+
 import {Login} from './Login'
 import {Signup} from './Signup'
-function App() {
 
+const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/signup",
+    element: <Signup />,
+  }
+]);
+
+function App(){
   return (
-   <>   
-        {/* <Login/> */}
-        <Signup/>
-   </>
-  )
+    <div >
+      <RouterProvider router={router} />
+    </div>
+  );
 }
 
-export default App
+export default App;

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Input } from './Input';
 import { Button } from './Button';
+import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 
 export function Signup() {
-  const [email, setMail] = useState('');
-  const [password, setPass] = useState('');
-  const [confirmPassword, setConfirmPass] = useState('');
-  const [otp, setOtp] = useState('');
-  const [showOtp, setShowOtp] = useState(false);
+    const [email, setMail] = useState('');
+    const [password, setPass] = useState('');
+    const [confirmPassword, setConfirmPass] = useState('');
+    const [otp, setOtp] = useState('');
+    const [showOtp, setShowOtp] = useState(false);
+    const navigate = useNavigate();
 
     function handleSignup() {
         if(password===confirmPassword && password!=='' 
@@ -22,6 +24,9 @@ export function Signup() {
         else if(password!==confirmPassword){
             alert("Passwords do not match");
         }
+    }
+    function handleBack(){
+        navigate('/login')
     }
 
   return (
@@ -93,7 +98,7 @@ export function Signup() {
                 ) : (
                     <>                    
                         <Button name={'SignUp'} className={'loginButton button'} onClick={handleSignup}/>
-                        <Button name={'Back'} className={'signupButton button'}/>
+                        <Button name={'Back'} className={'signupButton button'} onClick={handleBack}/>
                     </>
                 )}
               

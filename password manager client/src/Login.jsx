@@ -1,12 +1,69 @@
 import { useState } from 'react'
 import {Input} from './Input'
 import {Button} from './Button'
-import './Login.css' 
+import { Link, useNavigate } from 'react-router-dom';
+import * as EmailValidator from 'email-validator';
+import './Login.css'
 export function Login(){
     const [email,setMail] = useState("");
     const [password,setPass] = useState("");
-    const [login,setLogin] = useState(false);
-    const [signup,setSignup] = useState(false);
+    const navigate = useNavigate();
+    const server = "https://localhost:3000/"
+    async function handleLogin(){
+        if(email!=='' && password!==''){
+            if(!EmailValidator.validate(email)){
+                alert("Invalid Email");
+                return;
+            }
+            let userData = {
+                email: email,
+                password: password
+            }
+            let responseData;
+            try {
+                // Send the POST request using fetch
+                const response = await fetch("localhost:3000/api/users/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                // Parse the response data as JSON
+                responseData = await response.json();
+                
+                
+                
+                if (!response.ok) {
+                    throw new Error("Error: " + response.status);
+                }
+                else{
+                    accessToken = responseData.accessToken;
+                    console.log(accessToken);
+                    const username = email.split('@')[0];
+                    setCookie('accessToken',accessToken,15);
+                    setCookie('userName',username,60);
+                    navigate('/passwords')
+                }
+            } catch (error) {
+                // Request failed or an error occurred
+                if(responseData==undefined){
+                    alert("Failed to reach server");
+                }
+                else{
+                    alert(responseData.message);
+                }
+                console.error("Login failed: ", error.message);
+            }
+        }
+        else{
+            alert("All Fields are mandatory");
+        }
+    }
+    function handleSignup(){
+        navigate('/signup');
+    }
     return (
     <>
         <div className='flexbox'>
@@ -39,8 +96,8 @@ export function Login(){
                         />
                     </div>
                     <div className='flexbox' style={{margin:"10px 0px 40px 0px"}}>
-                        <Button name={"Login"} className={"loginButton button"} onClick={setLogin}/>
-                        <Button name={"Signup"} className={"signupButton button"} onClick={setSignup}/>
+                        <Button name={"Login"} className={"loginButton button"} onClick={handleLogin}/>
+                        <Button name={"Signup"} className={"signupButton button"} onClick={handleSignup}/>
                     </div>
                 </div>
             </div>
